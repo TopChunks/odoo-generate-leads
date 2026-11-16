@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_geoapify" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.geoapify</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="crm.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='crm']" position="inside">
+                <block title="Lead Generation">
+                    <setting string="Geoapify Places API" help="Configure the API key used to find businesses and create CRM leads automatically.">
+                        <field name="geoapify_api_key" password="True" groups="base.group_system"/>
+                        <div class="text-muted">
+                            Get a key from Geoapify, then save it here. The key is stored in Odoo settings and is not shown in the lead search.
+                        </div>
+                    </setting>
+                    <setting string="Foursquare Places API" help="Store a Foursquare Service API Key used for place search.">
+                        <field name="foursquare_api_key" password="True" groups="base.group_system"/>
+                        <div class="text-muted">
+                            Create a project in the Foursquare Developer Console, then generate a Service API Key in the project's Settings.
+                            <a href="https://docs.foursquare.com/developer/docs/manage-service-api-keys" target="_blank">Foursquare key setup guide</a>
+                        </div>
+                    </setting>
+                    <setting string="TomTom Places API" help="Store the TomTom API key used to search places and create CRM leads.">
+                        <field name="tomtom_api_key" password="True" groups="base.group_system"/>
+                        <div class="text-muted">
+                            Add a TomTom key with Places Search API access. This is separate from routing API access.
+                            <a href="https://docs.tomtom.com/places-search-api/documentation/product-information/quick-start" target="_blank">TomTom Places Search setup guide</a>
+                        </div>
+                    </setting>
+                    <setting string="Apify Google Maps" help="Configure the server-side Apify token used to search Google Maps business listings.">
+                        <field name="apify_api_token" password="True" groups="base.group_system"/>
+                        <div class="text-muted">
+                            Add an Apify API token. It is stored in Odoo settings and used only by the Odoo server.
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>
