@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import re
 import time
 from urllib.error import HTTPError, URLError
@@ -44,7 +45,12 @@ class CrmIapLeadMiningRequest(models.Model):
     )
     def _apify_api_request(self, path, payload=None, timeout=45):
         """Call Apify from the server. The token is only sent as an auth header."""
-        token = self.env['ir.config_parameter'].sudo().get_param('crm_lead_discovery.apify_api_token')
+        token = (
+            os.environ.get('APIFY_API_TOKEN')
+            or self.env['ir.config_parameter'].sudo().get_param(
+                'crm_lead_discovery.apify_api_token'
+            )
+        )
         if not token:
             raise UserError(_(
                 'Apify is not configured. An administrator must add an Apify API Token in '
@@ -227,7 +233,12 @@ class CrmIapLeadMiningRequest(models.Model):
 
     def _geoapify_request(self, endpoint, params, timeout=25):
         """Make a Geoapify request without logging or exposing the API key."""
-        key = self.env['ir.config_parameter'].sudo().get_param('crm_lead_discovery.geoapify_api_key')
+        key = (
+            os.environ.get('GEOAPIFY_API_KEY')
+            or self.env['ir.config_parameter'].sudo().get_param(
+                'crm_lead_discovery.geoapify_api_key'
+            )
+        )
         if not key:
             raise UserError(_(
                 'Geoapify Places API is not configured yet. An administrator must add the API key in '
@@ -588,7 +599,12 @@ class CrmIapLeadMiningRequest(models.Model):
         return self.action_get_lead_action()
 
     def _foursquare_request(self, params):
-        key = self.env['ir.config_parameter'].sudo().get_param('crm_lead_discovery.foursquare_api_key')
+        key = (
+            os.environ.get('FOURSQUARE_API_KEY')
+            or self.env['ir.config_parameter'].sudo().get_param(
+                'crm_lead_discovery.foursquare_api_key'
+            )
+        )
         if not key:
             raise UserError(_(
                 'Foursquare Places API is not configured. An administrator must add a Service API Key in '
@@ -703,7 +719,12 @@ class CrmIapLeadMiningRequest(models.Model):
         return self.action_get_lead_action()
 
     def _tomtom_request(self, payload):
-        key = self.env['ir.config_parameter'].sudo().get_param('crm_lead_discovery.tomtom_api_key')
+        key = (
+            os.environ.get('TOMTOM_API_KEY')
+            or self.env['ir.config_parameter'].sudo().get_param(
+                'crm_lead_discovery.tomtom_api_key'
+            )
+        )
         if not key:
             raise UserError(_(
                 'TomTom Places API is not configured. An administrator must add a TomTom Places API key in '
