@@ -33,16 +33,39 @@ class CrmLeadDiscoveryDistrict(models.Model):
 class CrmIapLeadMiningRequest(models.Model):
     _inherit = 'crm.iap.lead.mining.request'
 
+    
     source = fields.Selection(
-        [
-            ('odoo', 'Odoo'),
-            ('geoapify', 'Geoapify Places API'),
-            ('apify', 'Apify Google Maps'),
-            ('foursquare', 'Foursquare Places API'),
-            ('tomtom', 'TomTom Places API'),
-        ],
-        string='Source', required=True, default='odoo',
+        selection='_get_available_sources',
+        string='Source',
+        required=True,
+        default='odoo',
     )
+
+    def _get_available_sources(self):
+        config = self.env['ir.config_parameter'].sudo()
+
+        sources = [('odoo', 'Odoo')]
+
+        providers = [
+            ('geoapify', 'Geoapify Places API', 'GEOAPIFY_API_KEY',
+             'crm_lead_discovery.geoapify_api_key'),
+            ('apify', 'Apify Google Maps', 'APIFY_API_TOKEN',
+             'crm_lead_discovery.apify_api_token'),
+            ('foursquare', 'Foursquare Places API', 'FOURSQUARE_API_KEY',
+             'crm_lead_discovery.foursquare_api_key'),
+            ('tomtom', 'TomTom Places API', 'TOMTOM_API_KEY',
+             'crm_lead_discovery.tomtom_api_key'),
+        ]
+
+        for source, label, env_name, config_name in providers:
+            api_key = (
+                os.environ.get(env_name, '').strip()
+                or config.get_param(config_name, '').strip()
+            )
+            if api_key:
+                sources.append((source, label))
+
+        return sources
     def _apify_api_request(self, path, payload=None, timeout=45):
         """Call Apify from the server. The token is only sent as an auth header."""
         token = (
