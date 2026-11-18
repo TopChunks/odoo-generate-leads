@@ -8,7 +8,7 @@ from urllib.parse import parse_qs, urlencode, urlparse
 from urllib.request import Request
 from urllib.request import urlopen
 
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -33,7 +33,14 @@ class CrmLeadDiscoveryDistrict(models.Model):
 class CrmIapLeadMiningRequest(models.Model):
     _inherit = 'crm.iap.lead.mining.request'
 
-    
+
+    @api.depends('country_ids')
+    def _compute_available_state_ids(self):
+        for request in self:
+            request.available_state_ids = self.env['res.country.state'].search([
+                ('country_id', 'in', request.country_ids.ids)
+            ])
+
     source = fields.Selection(
         selection='_get_available_sources',
         string='Source',
